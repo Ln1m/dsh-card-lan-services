@@ -1,5 +1,7 @@
 # dsh-lan-services
 
+[English](README.en.md) · 中文
+
 ![功能栏局域网服务卡片界面示意](assets/dsh-lan-services.png)
 
 *界面示意：按官方主题变量渲染的版式，非实机截图。*
