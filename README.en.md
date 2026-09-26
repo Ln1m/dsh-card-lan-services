@@ -2,7 +2,7 @@
 
 [中文](README.md) · English
 
-![LAN services card in the Extensions tab](assets/dsh-lan-services.png)
+![LAN services card in the Extensions tab](assets/dsh-lan-services-en.png)
 
 *Mockup: layout rendered from the official theme tokens, not a screenshot of a running instance.*
 
