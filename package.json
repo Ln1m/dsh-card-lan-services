@@ -1,7 +1,7 @@
 {
     "name": "dsh-lan-services",
     "version": "0.1.0",
-    "description": "DSH 局域网服务管理器：自动探测 3090~3099 端口段上的复习网站等本地 HTTP 服务（server.cjs），左栏面板显示标题/局域网网址并一键托管启停进程，换网络网址自动更新；3081 移动端反代仍归 dsh-wifi-access。",
+    "description": "DSH 局域网服务管理器：自动探测 3090~3099 端口段上的复习网站等本地 HTTP 服务（server.cjs），左栏面板显示标题/局域网网址并一键托管启停进程，换网络网址自动更新；3081 移动端反代由 dsh-pocket 提供（dsh-wifi-access 作热备）。",
     "type": "module",
     "main": "lib/index.js",
     "exports": {
