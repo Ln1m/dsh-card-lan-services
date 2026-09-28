@@ -2,9 +2,9 @@
 
 [中文](README.md) · English
 
-![LAN services card in the Extensions tab](assets/dsh-lan-services-en.png)
+![LAN services card in the Extensions tab](assets/dsh-lan-services.png)
 
-*Mockup: layout rendered from the official theme tokens, not a screenshot of a running instance.*
+*Screenshot of a running DSH instance; demo content is sanitized.*
 
 A local network service manager: it probes local HTTP services on ports 3090–3099, lists their titles and LAN URLs in a sidebar panel, starts/stops the processes with one click, and updates the URLs when the network changes.
 
