@@ -1,6 +1,6 @@
 # dsh-lan-services
 
-> 不装 dsh-vk-suite 的零 vk 版在 [https://github.com/Ln1m/dsh-lan-services/tree/official](https://github.com/Ln1m/dsh-lan-services/tree/official)；当前 main 是双路版（没有 vk-suite 时自动走官方槽，装了才用 vk 的布局位）。
+> 本分支是 **vk 版**：只注册 vk 槽，需先装 [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite)（契约 + 骨架）。零 vk 版见 [official 分支](https://github.com/Ln1m/dsh-lan-services/tree/official)。
 
 [English](README.en.md) · 中文
 
@@ -31,13 +31,6 @@ dsh plugin --profile web add file:<本仓库>
 - Windows
 - 手机访问走 3081 反代，那部分归 dsh-wifi-access
 
-## 给局域网 / 公网链接留的位置
+## 入口
 
-本插件走官方 sidebar 槽，不依赖三栏 layout，当前也不占下面这两个位。若你同时装了 `dsh-vk-suite`，那两个位是留着给链接类插件的：
-
-| 预留位 | 用途 |
-|---|---|
-| `vk.statusbar.left` | 局域网链接：本机 LAN 访问地址、局域网服务清单 |
-| `vk.statusbar.right` | 公网链接：隧道 / 反代 / 分享地址 |
-
-谁实现谁填，用 `vkCard` 占位，见 dsh-vk-suite 的 README。
+注册在 vk 布局的左栏「功能」Tab（`vk.sidebar.extensions` 槽）。需先装 [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) 的契约与骨架。
