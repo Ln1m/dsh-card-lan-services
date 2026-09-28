@@ -1,6 +1,6 @@
-> 不装 dsh-vk-suite 的零 vk 版在 [https://github.com/Ln1m/dsh-lan-services/tree/official](https://github.com/Ln1m/dsh-lan-services/tree/official)；当前 main 是双路版（没有 vk-suite 时自动走官方槽，装了才用 vk 的布局位）。
-
 # dsh-lan-services
+
+> 不装 dsh-vk-suite 的零 vk 版在 [https://github.com/Ln1m/dsh-lan-services/tree/official](https://github.com/Ln1m/dsh-lan-services/tree/official)；当前 main 是双路版（没有 vk-suite 时自动走官方槽，装了才用 vk 的布局位）。
 
 [English](README.en.md) · 中文
 

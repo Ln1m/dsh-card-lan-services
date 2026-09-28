@@ -1,6 +1,6 @@
-> A vk-free build lives on the [https://github.com/Ln1m/dsh-lan-services/tree/official](https://github.com/Ln1m/dsh-lan-services/tree/official); main is the dual-path version (official slots without vk-suite, vk layout seats with it).
-
 # dsh-lan-services
+
+> A vk-free build lives on the [https://github.com/Ln1m/dsh-lan-services/tree/official](https://github.com/Ln1m/dsh-lan-services/tree/official); main is the dual-path version (official slots without vk-suite, vk layout seats with it).
 
 [中文](README.md) · English
 
