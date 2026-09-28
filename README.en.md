@@ -1,6 +1,6 @@
 # dsh-lan-services
 
-> This branch is the vk-free build: official slots only, no vk reference anywhere. The dual-path version is on [https://github.com/Ln1m/dsh-lan-services/tree/main](https://github.com/Ln1m/dsh-lan-services/tree/main).
+> This branch is the **vk-free build**: official slots only, no vk slot references; identical behaviour with or without dsh-vk-suite. The vk build is on the [main branch](https://github.com/Ln1m/dsh-lan-services/tree/main).
 
 [中文](README.md) · English
 
@@ -31,13 +31,6 @@ dsh plugin --profile web add file:<this repo>
 - Windows
 - Phone access goes through the 3081 reverse proxy, which is a separate concern (dsh-wifi-access / dsh-pocket)
 
-## Slots reserved for LAN / public links
+## Seats
 
-This plugin uses official sidebar slots, does not depend on the three-column layout, and does not occupy the two slots below. If you also run `dsh-vk-suite`, they are reserved for link-style plugins:
-
-| Reserved slot | Intended for |
-|---|---|
-| `vk.statusbar.left` | LAN links: local LAN access URLs, local service lists |
-| `vk.statusbar.right` | Public links: tunnels / reverse proxies / share URLs |
-
-Whoever implements it claims it, via `vkCard` — see the dsh-vk-suite README.
+Registers the official `sidebar.panellist` slot (left-rail icon) and the `main` slot (centre panel, same id pairs them); no dsh-vk-suite needed.

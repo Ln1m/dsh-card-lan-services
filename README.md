@@ -1,6 +1,6 @@
 # dsh-lan-services
 
-> 本分支是零 vk 版：只注册官方槽，代码里没有任何 vk 引用。双路版见 [https://github.com/Ln1m/dsh-lan-services/tree/main](https://github.com/Ln1m/dsh-lan-services/tree/main)。
+> 本分支是 **零 vk 版**：只注册官方槽，代码不引用任何 vk 槽，装不装 dsh-vk-suite 都一样。vk 版见 [main 分支](https://github.com/Ln1m/dsh-lan-services/tree/main)。
 
 [English](README.en.md) · 中文
 
@@ -31,13 +31,6 @@ dsh plugin --profile web add file:<本仓库>
 - Windows
 - 手机访问走 3081 反代，那部分归 dsh-wifi-access
 
-## 给局域网 / 公网链接留的位置
+## 入口
 
-本插件走官方 sidebar 槽，不依赖三栏 layout，当前也不占下面这两个位。若你同时装了 `dsh-vk-suite`，那两个位是留着给链接类插件的：
-
-| 预留位 | 用途 |
-|---|---|
-| `vk.statusbar.left` | 局域网链接：本机 LAN 访问地址、局域网服务清单 |
-| `vk.statusbar.right` | 公网链接：隧道 / 反代 / 分享地址 |
-
-谁实现谁填，用 `vkCard` 占位，见 dsh-vk-suite 的 README。
+注册官方 `sidebar.panellist` 槽（左栏图标）与 `main` 槽（中央面板，同一个 id 配对），不依赖 dsh-vk-suite。
