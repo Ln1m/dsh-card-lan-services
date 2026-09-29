@@ -29,6 +29,16 @@ dsh plugin --profile web add file:<本仓库>/dsh-files-tree
 ./install.ps1
 ```
 
+不克隆仓库、直接从 Release 装（一行一个包）：
+
+```sh
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-tree-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-open-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-extensions-panel-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lan-services-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lt-tasks-0.7.0.tgz"
+```
+
 装完重启 web 实例。每个包目录里还有它自己的 README。
 
 ## 界面
