@@ -47,7 +47,7 @@
     "author": "Ln1m (https://github.com/Ln1m)",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Ln1m/dsh-lan-services.git"
+        "url": "git+https://github.com/Ln1m/dsh-card-lan-services.git"
     },
     "homepage": "https://github.com/Ln1m/dsh-card-lan-services#readme",
     "bugs": {
