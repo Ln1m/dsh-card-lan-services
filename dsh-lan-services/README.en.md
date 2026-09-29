@@ -1,5 +1,7 @@
 # dsh-lan-services
 
+> This branch is the **vk build**: vk slots only, and [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) (contract + layout) must be installed first. The vk-free build is on the [official branch](https://github.com/Ln1m/dsh-lan-services/tree/official).
+
 > Two builds: `main` is the **vk build** (vk slots only — install the [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) contract + skeleton first); the `official` branch is the **vk-free build** (no vk dependency, official slots only). **Use the vk build** — position: one card inside the sidebar Tools tab (`vk.sidebar.extensions`); **the panel and the card pattern live in [dsh-side-tools](https://github.com/Ln1m/dsh-side-tools)**, and the cards this one hangs internally are not open source.
 > Conflicts: a slot renders only its highest-priority entry, and two registrations at the same priority throw; mutually exclusive with anything claiming the same position (see "How to use it / what it conflicts with" in [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite)).
 

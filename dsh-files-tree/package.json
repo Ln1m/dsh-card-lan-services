@@ -1,6 +1,6 @@
 {
   "name": "dsh-files-tree",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "文件家族 A：左栏「文件」Tab（文件树）+ 输入区 @ 引用（装上都有）",
   "type": "module",
   "main": "lib/index.js",
@@ -27,6 +27,10 @@
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.2"
   },
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
   "license": "MIT",
   "author": "Ln1m (https://github.com/Ln1m)",
   "repository": {

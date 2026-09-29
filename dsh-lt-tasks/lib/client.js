@@ -561,27 +561,61 @@ window.__ModuleLoader__.load({
           if (ws && typeof ws.startSession === "function") ws.startSession();
         }
       };
-      // 新建对话 → 轮询拿到新会话 id → 把一句话预填进输入框（不自动发送）
+      // 2026-09-29 修：会话列表快照只有 {ids,byId,phase,projectionsBySession}，没有 current；
+      // 旧代码轮询 getSnapshot().current 永远拿到 undefined → 会话开出来了但草稿永不写入。
+      // 现行口径 = byId 里 retainedBy.mainView>0 的那条（与 ui-workspace 内部 mainSessionId 同款）。
+      const sessionRows = () => {
+        try { return ctx.get("sessions")?.list?.getSnapshot?.()?.byId; } catch { return undefined; }
+      };
+      const mainSessionId = () => {
+        const byId = sessionRows();
+        if (!byId) return undefined;
+        return Object.values(byId).find((row) => ((row && row.retainedBy && row.retainedBy.mainView) || 0) > 0)?.id;
+      };
+      const isBlankSession = (id) => {
+        const byId = sessionRows();
+        return !!(byId && byId[id] && byId[id].blank === true);
+      };
+      const writeDraft = (id, text) => {
+        try {
+          const shell = ctx.get("conversation")?.input?.shell?.(id);
+          if (shell?.actions?.setDraft) { shell.actions.setDraft(text); return true; }
+        } catch {}
+        return false;
+      };
+      // 新建对话 → 等 startSession 异步建/复用的那个会话落定 → 把一句话预填进输入框（不自动发送）
       const prefillNew = (text) => {
-        // 2026-09-13 修：同上——新建会话必须走 uiWorkspace，否则下面的 typeof 判定失败直接 return
-        // （表现为点「＋ 新对话」完全无反应，会话也不新建）。
+        // 2026-09-13 修：新建会话必须走 uiWorkspace（startSession 是 UI 服务的方法）。
         const nav = ctx.get("uiWorkspace");
         const ws = nav && typeof nav.startSession === "function" ? nav : ctx.get("workspaces");
-        const sessions = ctx.get("sessions");
-        const conv = ctx.get("conversation");
-        if (!ws || typeof ws.startSession !== "function" || !sessions || !sessions.list) return;
-        const before = sessions.list.getSnapshot?.()?.current;
+        if (!ws || typeof ws.startSession !== "function" || !sessionRows()) return;
+        const before = mainSessionId();
+        const blankBefore = before !== undefined && isBlankSession(before);
         ws.startSession();
         const deadline = Date.now() + 15000;
+        let wrote = null;
+        let watchUntil = 0;
         const tick = () => {
-          if (Date.now() > deadline) return;
-          const cur = sessions.list.getSnapshot?.()?.current;
-          if (!cur || cur === before) { setTimeout(tick, 100); return; }
-          try {
-            const shell = conv?.input?.shell?.(cur);
-            if (shell?.actions?.setDraft) { shell.actions.setDraft(text); return; }
-          } catch {}
-          setTimeout(tick, 100);
+          const cur = mainSessionId();
+          if (wrote !== null) {
+            // 落点又变了（同时存在多个空会话时 startSession 可能选了另一个）：草稿挪过去，旧的原样撤回
+            if (cur !== undefined && cur !== wrote && cur !== before && isBlankSession(cur) && Date.now() < watchUntil && writeDraft(cur, text)) {
+              try {
+                const old = ctx.get("conversation")?.input?.shell?.(wrote);
+                if (old?.state?.getSnapshot?.().draft === text) old.actions.setDraft("");
+              } catch {}
+              wrote = cur;
+              watchUntil = Date.now() + 1200;
+            }
+            if (Date.now() < watchUntil) setTimeout(tick, 100);
+            return;
+          }
+          // 落定判据：当前会话换人了，或本来就停在一个空会话上（startSession 直接复用它，id 不变）
+          if (cur !== undefined && (cur !== before || blankBefore) && writeDraft(cur, text)) {
+            wrote = cur;
+            watchUntil = Date.now() + 1200;
+          }
+          if (Date.now() < deadline) setTimeout(tick, 100);
         };
         tick();
       };

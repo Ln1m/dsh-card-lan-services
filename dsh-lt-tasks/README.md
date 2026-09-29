@@ -1,7 +1,6 @@
 # dsh-lt-tasks
 
-> 两个版本：`main` = **vk 版**（只注册 vk 槽，需先装 [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) 契约 + 骨架）；`official` 分支 = **官方挂载版**（零 vk 依赖，挂官方槽）。**推荐 vk 版** —— 位置：左栏「任务」Tab（`vk.sidebar.tasks`）。
-> 冲突：一个槽位只渲染优先级最高的一条，同优先级重复注册会直接抛错；与占同一位置的插件互斥（详见 [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) 的「推荐怎么用 / 会跟谁冲突」）。
+> 本分支是 **vk 版**：只注册 vk 槽，需先装 [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite)（契约 + 骨架）。零 vk 版见 [official 分支](https://github.com/Ln1m/dsh-lt-tasks/tree/official)。
 
 多窗口接力推进长期任务的 DeepSeek Harness 插件。
 
@@ -11,7 +10,7 @@
 
 ## 界面
 
-![Tasks 视图](https://cdn.jsdelivr.net/gh/Ln1m/dsh-side-tasks@main/docs/screenshot.png)
+![Tasks 视图](https://cdn.jsdelivr.net/gh/Ln1m/dsh-lt-tasks@main/docs/screenshot.png)
 
 ## 功能
 
@@ -146,7 +145,7 @@
 ## 开发
 
 ```
-plugins/lt-tasks/
+plugins/dsh-lt-tasks/
 ├── lib/index.js      # host 入口：注册工具 + HTTP 路由
 ├── lib/store.js      # 任务存储、状态机、文档读写、refs 分区、快照、冻结清单
 ├── lib/lock.js       # 并发锁

@@ -21,6 +21,9 @@ window.__ModuleLoader__.load({
        ④ 三条都不通才什么都不开。 */
     const EMBED_KIND = 'dsh-embedded-browser';
     const OFFICIAL_BROWSER_KIND = 'browser';
+    /* 面板还没挂上时把请求放这儿：dsh-embedded-browser 挂好全局把手后第一件事就是取走它。
+       两边都认这个槽，就不看谁先 mount，也不用盲等几秒。 */
+    const EMBED_PENDING = '__DSH_EMBED_PENDING__';
     function embedHook() {
       const hook = typeof window === 'undefined' ? undefined : window.__DSH_EMBED_OPEN__;
       return typeof hook === 'function' ? hook : null;
@@ -34,19 +37,24 @@ window.__ModuleLoader__.load({
         return true;
       } catch { return false; }
     }
+    function takePending(url) {
+      try { if (globalThis[EMBED_PENDING] === url) globalThis[EMBED_PENDING] = null; } catch { /* ignore */ }
+    }
     function openInPane(url) {
       const hook = embedHook();
       if (hook !== null) { try { hook(url); return; } catch { /* 落到下面的等待 */ } }
       if (!openTabSafely(EMBED_KIND)) { openTabSafely(OFFICIAL_BROWSER_KIND, { params: { url } }); return; }
-      let left = 20;
+      try { globalThis[EMBED_PENDING] = url; } catch { /* 没有 globalThis 就只靠下面的等待 */ }
+      let left = 60;
       const tick = () => {
         const fn = embedHook();
-        if (fn !== null) { try { fn(url); } catch { /* ignore */ } return; }
+        if (fn !== null) { takePending(url); try { fn(url); } catch { /* ignore */ } return; }
         left -= 1;
-        if (left > 0) { setTimeout(tick, 150); return; }
+        if (left > 0) { setTimeout(tick, 100); return; }
+        takePending(url);
         openTabSafely(OFFICIAL_BROWSER_KIND, { params: { url } });
       };
-      setTimeout(tick, 150);
+      setTimeout(tick, 100);
     }
 
     function insertStyles(css) {
