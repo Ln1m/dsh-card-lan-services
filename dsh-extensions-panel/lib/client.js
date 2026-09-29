@@ -12,6 +12,43 @@ window.__ModuleLoader__.load({
     var React = require('react');
     const h = React.createElement;
 
+    const ctxRef = { current: null };
+    /* 外链的去处按可用性排，一律不弹外壳悬浮窗：
+       ① 我们那只右栏浏览器（dsh-embedded-browser，挂载期间留了全局把手）→ 直接导航；
+       ② 没挂着就请右栏把那一页打开，再多等几帧；
+       ③ 我们的包不在（openTab 抛「没有类型认领」）→ 官方「浏览器」页
+          （@deepseek-ai/dsh-client-ui-sidebar-browser，kind=browser，地址从 tab.navigation.params.url 进）；
+       ④ 三条都不通才什么都不开。 */
+    const EMBED_KIND = 'dsh-embedded-browser';
+    const OFFICIAL_BROWSER_KIND = 'browser';
+    function embedHook() {
+      const hook = typeof window === 'undefined' ? undefined : window.__DSH_EMBED_OPEN__;
+      return typeof hook === 'function' ? hook : null;
+    }
+    function openTabSafely(kind, options) {
+      try {
+        const ctx = ctxRef.current;
+        const right = ctx === null || ctx === undefined ? null : ctx.get('sidebarRight');
+        if (right === null || right === undefined || typeof right.openTab !== 'function') return false;
+        right.openTab(kind, options);
+        return true;
+      } catch { return false; }
+    }
+    function openInPane(url) {
+      const hook = embedHook();
+      if (hook !== null) { try { hook(url); return; } catch { /* 落到下面的等待 */ } }
+      if (!openTabSafely(EMBED_KIND)) { openTabSafely(OFFICIAL_BROWSER_KIND, { params: { url } }); return; }
+      let left = 20;
+      const tick = () => {
+        const fn = embedHook();
+        if (fn !== null) { try { fn(url); } catch { /* ignore */ } return; }
+        left -= 1;
+        if (left > 0) { setTimeout(tick, 150); return; }
+        openTabSafely(OFFICIAL_BROWSER_KIND, { params: { url } });
+      };
+      setTimeout(tick, 150);
+    }
+
     function insertStyles(css) {
       try {
         const style = document.createElement('style');
@@ -50,7 +87,7 @@ window.__ModuleLoader__.load({
 .dxp-ok{color:var(--dsw-alias-state-success-primary);}
 .dxp-err{color:var(--dsw-alias-state-error-primary);font-size:10px;line-height:1.5;word-break:break-all;}
 .dxp-note{font-size:10px;color:var(--dsw-alias-label-secondary);line-height:1.6;border-top:1px dashed var(--dsw-alias-border-l1);padding-top:4px;margin-top:2px;}
-.dxp-addr{font-size:10px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dsw-alias-brand-primary);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;text-decoration:none;border-bottom:1px dashed color-mix(in srgb,var(--dsw-alias-brand-primary) 45%,transparent);}
+.dxp-addr{font-size:10px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dsw-alias-brand-primary);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;text-decoration:none;border-bottom:1px dashed color-mix(in srgb,var(--dsw-alias-brand-primary) 45%,transparent);background:0 0;border:none;padding:0;font-family:inherit;text-align:left;}
 .dxp-addr:hover{opacity:.85;}
 .dxp-copy{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--dsw-alias-label-secondary);cursor:pointer;border:none;background:transparent;padding:0;font-family:inherit;flex:none;}
 .dxp-copy:hover{color:var(--dsw-alias-brand-primary);}
@@ -250,7 +287,7 @@ window.__ModuleLoader__.load({
               switchBtn(lanOn, toggleLan, !st || busy),
             ),
             h('div', { className: 'dxp-row2' },
-              lanUrl ? h('a', { className: 'dxp-addr', href: lanUrl, target: '_blank', rel: 'noreferrer', title: lanUrl }, lanUrl) : h('span', { className: 'dxp-hint' }, '未就绪'),
+              lanUrl ? h('button', { type: 'button', className: 'dxp-addr', title: '在拓展栏浏览器打开 ' + lanUrl, onClick: () => openInPane(lanUrl) }, lanUrl) : h('span', { className: 'dxp-hint' }, '未就绪'),
               lanUrl ? copyBtn('lan', lanUrl) : null,
             ),
             h('div', { className: 'dxp-row2' },
@@ -262,7 +299,7 @@ window.__ModuleLoader__.load({
               '我已知情',
             ) : null,
             h('div', { className: 'dxp-row2' },
-              tunnelUrl ? h('a', { className: 'dxp-addr', href: tunnelUrl, target: '_blank', rel: 'noreferrer', title: tunnelUrl }, tunnelUrl) : h('span', { className: 'dxp-hint' }, POCKET_PHASE[phase] || '未开启'),
+              tunnelUrl ? h('button', { type: 'button', className: 'dxp-addr', title: '在拓展栏浏览器打开 ' + tunnelUrl, onClick: () => openInPane(tunnelUrl) }, tunnelUrl) : h('span', { className: 'dxp-hint' }, POCKET_PHASE[phase] || '未开启'),
               tunnelUrl ? copyBtn('tunnel', tunnelUrl) : null,
             ),
             tunnelQr ? h('div', { className: 'dxp-row2' }, h('button', { type: 'button', className: 'dxp-btn', onClick: () => setQr(qr === 'tunnel' ? '' : 'tunnel') }, '二维码')) : null,
@@ -282,6 +319,7 @@ window.__ModuleLoader__.load({
 
     const inject = ['slots'];
     function apply(ctx) {
+      ctxRef.current = ctx;
       insertStyles(CSS);
       const slots = ctx.get('slots');
       if (slots === undefined) return;

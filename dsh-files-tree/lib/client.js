@@ -198,7 +198,7 @@ function vkHomeDirsSync() {
 			// z-index：官方 @ 菜单自身是 z-index:100（dsh-client-ui-input-trigger 的 ._3e4SsG_menu），
 			// 官方 UI 里最高的浮层是 1100。原来这里是 90 → **@ 菜单浮在弹窗之上**，正好压在卡片上半截，
 			// 就是用户 2026-09-13 报的「@ 列表搜索框还是存在遮挡关系」。取 1200 让它置顶到所有官方浮层之上。
-			".vk_browseOverlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center;padding:24px;animation:vkFadeIn .12s ease-out}",
+			".vk_browseOverlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;padding:24px;animation:vkFadeIn .12s ease-out}",
 			// 固定尺寸（2026-09-12 用户要求：点开文件夹后不能变大，弹窗自始至终一个大小）：
 			// 卡片给死高度、内容区只滚不撑 —— 条数少（磁盘列表）与条数多（文件夹里几十项）都是同一块框。
 			// 高度取 300px = 「刚打开那一屏」的自然高度（头部 + 路径行 + 磁盘/桌面约 5 行条目 ≈ 285px），
@@ -206,7 +206,7 @@ function vkHomeDirsSync() {
 			// --vk-browse-dx：水平对齐偏移（2026-09-13 用户要求「相对对话框水平居中」）。
 			// 浮层模式由 VKBrowseModal 按锚点算出像素值写成内联变量；嵌入式不设 → 默认 0px，行为不变。
 			// transform 既写在常规态（动画结束后由它生效）也写进 vkBrowseIn（动画期间不丢偏移）。
-			".vk_browseCard{width:min(520px,94vw);height:min(300px,72vh);max-height:min(300px,72vh);background:var(--dsw-specific-menu);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:var(--dsw-shadow-lv3),0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;transform:translateX(var(--vk-browse-dx,0px));animation:vkBrowseIn .14s cubic-bezier(.2,.7,.3,1)}",
+			".vk_browseCard{width:min(520px,94vw);height:min(300px,72vh);max-height:min(300px,72vh);background:var(--dsw-alias-bg-layer-2,var(--dsw-specific-menu));border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:var(--dsw-shadow-lv3),0 24px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;transform:translateX(var(--vk-browse-dx,0px));animation:vkBrowseIn .14s cubic-bezier(.2,.7,.3,1)}",
 			".vk_browseHead{display:flex;align-items:center;gap:8px;padding:11px 12px 10px 14px;border-bottom:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary)}",
 			".vk_browseTitle{flex:1;min-width:0;font-size:13px;font-weight:600;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
 			".vk_iconBtn{appearance:none;border:none;background:none;cursor:pointer;color:var(--dsw-alias-label-tertiary);padding:0;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:none;transition:background-color .1s,color .1s,transform .08s}",
@@ -523,10 +523,48 @@ function vkHomeDirsSync() {
 		 * 取不到（插件刚加载 / 无会话面）时返回空串，调用方回落到一个与「无会话」等价的桶。
 		 */
 		function vkCurrentSessionId() {
+			// ★主口径（对照官方客户端复核，2026-09-29）：中间栏正在显示哪个会话，就是 list 快照里
+			// `retainedBy.mainView > 0` 的那一行 —— 官方 layout / session / workspace / cordis /
+			// settings-general / open-in-app 六处取当前会话用的都是这一句。快照字段只有
+			// { ids, byId, phase, projectionsBySession }，`current` / `currentId` 早就不存在了，
+			// 只靠下面三层兜底会永远拿到空串（用户 2026-09-29 报的「先在中间栏打开一个会话」）。
+			try {
+				const byId = ctxRef.current.get("sessions").list.getSnapshot().byId;
+				const rows = byId === undefined || byId === null ? [] : Object.keys(byId);
+				for (const id of rows) {
+					const row = byId[id];
+					if (row !== undefined && row !== null && ((row.retainedBy && row.retainedBy.mainView) || 0) > 0) return id;
+				}
+			} catch { /* 落到下面的兜底 */ }
+			// 兜底：旧字段名（1.6 时期是 current）
+			// DSH 1.7 的 sessions 快照**只剩 byId**，老的 `current` / `currentId` 都没了。
+			// 以前这里只认 `current` → 永远空串 → 双击文件在右栏打开时被判成「没有会话」，
+			// 弹「先在中间栏打开一个会话」（用户 2026-09-29 报的）。三层取值口径与 dsh-vk-layout 一致。
 			try {
 				const snapshot = ctxRef.current.get("sessions").list.getSnapshot();
-				return snapshot !== undefined && snapshot !== null && typeof snapshot.current === "string" ? snapshot.current : "";
-			} catch { return ""; }
+				if (snapshot !== undefined && snapshot !== null) {
+					for (const key of ["current", "currentId", "activeId", "selectedId"]) {
+						const value = snapshot[key];
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ② */ }
+			try {
+				const svc = ctxRef.current.get("sessions");
+				for (const key of ["current", "currentId", "activeId"]) {
+					if (typeof svc[key] === "function") {
+						const value = svc[key]();
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ③ */ }
+			try {
+				const row = document.querySelector("[data-row-key^=\"session:\"][aria-selected=\"true\"]")
+					|| document.querySelector("[data-row-key^=\"session:\"][class*=\"_selected\"]");
+				const raw = row === null ? "" : String(row.getAttribute("data-row-key") || "");
+				if (raw.indexOf("session:") === 0) return raw.slice("session:".length);
+			} catch { /* ignore */ }
+			return "";
 		}
 		/** 文件栏两份列表（最近打开 / 文件列表）的落盘键：**按会话隔离**，键里带会话 id。 */
 		function vkSessionKey(sid, kind) {
@@ -1770,7 +1808,15 @@ function vkHomeDirsSync() {
 			} catch { /* 服务未就绪 */ }
 		}
 		/** 文件栏正文：状态与轮询都在这一层，FileTree 只收 props。 */
-		function VKFilesPane() {
+		function VKFilesPane(props) {
+			const vkPaneActive = props === undefined || props === null ? void 0 : props.active;
+			// 切走「文件」这一拍收回展开态（与 dsh-lt-tasks 的 TasksView 同一套写法）：
+			// 骨架在切标签时把 active 由 true 变 false，栏目就地收自己的东西，不另挑时机。
+			// 文件树的展开集是模块级 Set，DOM 上没有可点的折叠项，aria-expanded 扫描扫不到，只能在这里清。
+			react.useEffect(() => {
+				if (vkPaneActive !== false) return;
+				try { vkFileTreeClearExpanded("pane-idle"); } catch { /* ignore */ }
+			}, [vkPaneActive]);
 			const [root, setRoot] = react.useState(null);
 			const [autoRoot, setAutoRoot] = react.useState(null);
 			const [recentDirs, setRecentDirs] = react.useState(() => readRecents(""));
@@ -2157,7 +2203,7 @@ function vkHomeDirsSync() {
 			// z-index：官方 @ 菜单自身是 z-index:100（dsh-client-ui-input-trigger 的 ._3e4SsG_menu），
 			// 官方 UI 里最高的浮层是 1100。原来这里是 90 → **@ 菜单浮在弹窗之上**，正好压在卡片上半截，
 			// 就是用户 2026-09-13 报的「@ 列表搜索框还是存在遮挡关系」。取 1200 让它置顶到所有官方浮层之上。
-			".vk_browseOverlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center;padding:24px;animation:vkFadeIn .12s ease-out}",
+			".vk_browseOverlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.52);display:flex;align-items:center;justify-content:center;padding:24px;animation:vkFadeIn .12s ease-out}",
 			// 固定尺寸（2026-09-12 用户要求：点开文件夹后不能变大，弹窗自始至终一个大小）：
 			// 卡片给死高度、内容区只滚不撑 —— 条数少（磁盘列表）与条数多（文件夹里几十项）都是同一块框。
 			// 高度取 300px = 「刚打开那一屏」的自然高度（头部 + 路径行 + 磁盘/桌面约 5 行条目 ≈ 285px），
@@ -2165,7 +2211,7 @@ function vkHomeDirsSync() {
 			// --vk-browse-dx：水平对齐偏移（2026-09-13 用户要求「相对对话框水平居中」）。
 			// 浮层模式由 VKBrowseModal 按锚点算出像素值写成内联变量；嵌入式不设 → 默认 0px，行为不变。
 			// transform 既写在常规态（动画结束后由它生效）也写进 vkBrowseIn（动画期间不丢偏移）。
-			".vk_browseCard{width:min(520px,94vw);height:min(300px,72vh);max-height:min(300px,72vh);background:var(--dsw-specific-menu);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:var(--dsw-shadow-lv3),0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;transform:translateX(var(--vk-browse-dx,0px));animation:vkBrowseIn .14s cubic-bezier(.2,.7,.3,1)}",
+			".vk_browseCard{width:min(520px,94vw);height:min(300px,72vh);max-height:min(300px,72vh);background:var(--dsw-alias-bg-layer-2,var(--dsw-specific-menu));border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:var(--dsw-shadow-lv3),0 24px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;transform:translateX(var(--vk-browse-dx,0px));animation:vkBrowseIn .14s cubic-bezier(.2,.7,.3,1)}",
 			".vk_browseHead{display:flex;align-items:center;gap:8px;padding:11px 12px 10px 14px;border-bottom:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary)}",
 			".vk_browseTitle{flex:1;min-width:0;font-size:13px;font-weight:600;letter-spacing:.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
 			".vk_iconBtn{appearance:none;border:none;background:none;cursor:pointer;color:var(--dsw-alias-label-tertiary);padding:0;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:none;transition:background-color .1s,color .1s,transform .08s}",
@@ -2441,10 +2487,48 @@ function vkHomeDirsSync() {
 		}
 
 		function vkCurrentSessionId() {
+			// ★主口径（对照官方客户端复核，2026-09-29）：中间栏正在显示哪个会话，就是 list 快照里
+			// `retainedBy.mainView > 0` 的那一行 —— 官方 layout / session / workspace / cordis /
+			// settings-general / open-in-app 六处取当前会话用的都是这一句。快照字段只有
+			// { ids, byId, phase, projectionsBySession }，`current` / `currentId` 早就不存在了，
+			// 只靠下面三层兜底会永远拿到空串（用户 2026-09-29 报的「先在中间栏打开一个会话」）。
+			try {
+				const byId = ctxRef.current.get("sessions").list.getSnapshot().byId;
+				const rows = byId === undefined || byId === null ? [] : Object.keys(byId);
+				for (const id of rows) {
+					const row = byId[id];
+					if (row !== undefined && row !== null && ((row.retainedBy && row.retainedBy.mainView) || 0) > 0) return id;
+				}
+			} catch { /* 落到下面的兜底 */ }
+			// 兜底：旧字段名（1.6 时期是 current）
+			// DSH 1.7 的 sessions 快照**只剩 byId**，老的 `current` / `currentId` 都没了。
+			// 以前这里只认 `current` → 永远空串 → 双击文件在右栏打开时被判成「没有会话」，
+			// 弹「先在中间栏打开一个会话」（用户 2026-09-29 报的）。三层取值口径与 dsh-vk-layout 一致。
 			try {
 				const snapshot = ctxRef.current.get("sessions").list.getSnapshot();
-				return snapshot !== undefined && snapshot !== null && typeof snapshot.current === "string" ? snapshot.current : "";
-			} catch { return ""; }
+				if (snapshot !== undefined && snapshot !== null) {
+					for (const key of ["current", "currentId", "activeId", "selectedId"]) {
+						const value = snapshot[key];
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ② */ }
+			try {
+				const svc = ctxRef.current.get("sessions");
+				for (const key of ["current", "currentId", "activeId"]) {
+					if (typeof svc[key] === "function") {
+						const value = svc[key]();
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ③ */ }
+			try {
+				const row = document.querySelector("[data-row-key^=\"session:\"][aria-selected=\"true\"]")
+					|| document.querySelector("[data-row-key^=\"session:\"][class*=\"_selected\"]");
+				const raw = row === null ? "" : String(row.getAttribute("data-row-key") || "");
+				if (raw.indexOf("session:") === 0) return raw.slice("session:".length);
+			} catch { /* ignore */ }
+			return "";
 		}
 		/** 文件栏两份列表（最近打开 / 文件列表）的落盘键：**按会话隔离**，键里带会话 id。 */
 		function vkSessionKey(sid, kind) {
@@ -3763,6 +3847,51 @@ function vkHomeDirsSync() {
 		 * 构建 @ 扩域源对象（供 inputTriggers.registerSource）。
 		 * @returns 源定义。
 		 */
+		/**
+		 * 哪些候选在官方菜单里带 `drill: true`（那颗独立小箭头）。
+		 *
+		 * 2026-09-30 重定：**只给「什么都不插入、只换一屏」的行**（栏目行 / 展开更多 / 返回上一级）。
+		 * 目录行与文件行不再带 drill —— 点整行就是官方的 settling pick（插入引用），一次点击到位；
+		 * 想展开目录走那颗小箭头（官方 drill 通道，返回 continue 保持菜单开）。
+		 *
+		 * 为什么以前给目录行也标 drill：那时靠「点行展开」的拦截方案，需要让箭头出现提示可展开；
+		 * 但那条链路（mousedown 拦截 + 写回同文本触发重扫）依赖太多内部行为，一直只推进一点点。
+		 */
+		function vkAtNeedsDrill(item) {
+			if (item === null || typeof item !== "object") return false;
+			// 栏目行 / 展开更多目录 / 目录行的旧形态 / 展开-收起：这些点了不插入内容，只换一屏
+			const label = String(item.label === undefined ? item.name || "" : item.label);
+			if (label.indexOf(VK_AT_SECTION) >= 0) return true;
+			if (label.indexOf("展开更多") >= 0) return true;
+			const raw = typeof item.value === "string" ? item.value : "";
+			if (raw.length === 0) return false;
+			if (raw.indexOf(VK_AT_SECTION_TAG) >= 0) return true;
+			if (raw.indexOf(VK_AT_EXPAND_TAG) >= 0) return true;
+			if (raw.indexOf(VK_AT_MORE_TAG) >= 0) return true;
+			if (raw.indexOf(VK_AT_ROW_TAG) >= 0) return true;
+			// 官方风格目录行：{kind:"file", fileKind:"directory"}（dsh-client-ui-reference 就这样标）
+			return raw.indexOf("\"fileKind\":\"directory\"") >= 0 || raw.indexOf("\"directory\"") >= 0;
+		}
+		/**
+		 * 零宽空格：让「返回同一段 @ 文本」在官方看来**真的变了**。
+		 *
+		 * 官方 `onEditorUpdate()` → `inputTriggers.track()` 里有一条 `same` 短路：草稿文本与 span
+		 * 都没变就 return，**不会重取候选**。我们以前把 `@<query>` 原样写回，于是菜单列表纹丝不动
+		 * （用户看到的「点了没反应」）。官方 `insertText` 走的是 `span.draftRev` CAS，
+		 * 只要求「替换成功」——所以文本里带一个不可见字符即可，扫描时再剥掉。
+		 */
+		const VK_AT_ZWSP = "\u200B";
+		/** 本轮回写用不用带零宽空格：每次翻转，保证相邻两次文本一定不同。 */
+		let vkAtZwspOn = false;
+		/** 剥掉所有的零宽空格（query 与回写文本都走它，保证扫描/匹配只看用户真正打的内容）。 */
+		function vkAtStripZwsp(text) {
+			return String(text === null || text === undefined ? "" : text).split(VK_AT_ZWSP).join("");
+		}
+		/** 回写 token 的文本：始终带上与上一轮不同的零宽空格后缀（见上）。 */
+		function vkAtRedraftText(query) {
+			vkAtZwspOn = !vkAtZwspOn;
+			return "@" + vkAtStripZwsp(query) + (vkAtZwspOn ? VK_AT_ZWSP : "");
+		}
 		function vkAtSourceDefinition() {
 			return {
 				trigger: "@",
@@ -3770,7 +3899,8 @@ function vkHomeDirsSync() {
 				order: 70,
 				showGroupTitle: false,
 				async candidates(session, req) {
-					const query = String(req.query === null || req.query === undefined ? "" : req.query);
+					// 零宽空格只用于让官方「看到变化」，搜索与匹配一律用剥掉之后的查询
+					const query = vkAtStripZwsp(req.query === null || req.query === undefined ? "" : req.query);
 					// 换了关键词 = 换了一屏内容：选中态作废、并退出目录浏览态（回到搜索结果那一屏）；
 					// 否则回车可能引用已经不在列表里的旧条目、或搜索打字没反应。
 					if (vkAtBrowse.q !== query) {
@@ -3846,6 +3976,20 @@ function vkHomeDirsSync() {
 					let value = null;
 					try { value = JSON.parse(candidate.value); } catch { return void 0; }
 					if (value === null || value === void 0) return void 0;
+					// 链路痕迹：一次点击走了哪条分支、回写的 token 长什么样（CDP 一条表达式读全）
+					const trace = (branch, extra) => {
+						try {
+							globalThis.__VK_AT_PICK__ = Object.assign({
+								at: new Date().toISOString(),
+								action: action === undefined ? "pick" : action,
+								via: via === undefined ? "?" : via,
+								kind: value.kind,
+								branch: branch,
+								q: vkAtRestoreText,
+								zwsp: vkAtZwspOn
+							}, extra === undefined ? {} : extra);
+						} catch { /* 痕迹只给取证用 */ }
+					};
 					// ① 浏览态末尾的「↑ 返回上一级 / ⌂ 回到目录首页」（有边界：最多退到本次起点 vkAtBrowse.root）
 					if (value.kind === "nav") {
 						vkAtBrowse.dir = typeof value.to === "string" && value.to.length > 0 ? value.to : null;
@@ -3855,16 +3999,12 @@ function vkHomeDirsSync() {
 						vkAtBrowse.mousePick = null;
 						vkAtClearPicked();
 						vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-						return { text: "@" + vkAtRestoreText, continue: true };
+						trace("redraft"); return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
 					}
-					// ② 条目行（2026-09-12 第六轮用户口径）
+					// ② 条目行：单击 = 选中（描边高亮，菜单不关、不插入）；同一行再点一次 = 目录进下一级 / 文件插入引用
 					if (value.kind === "file") {
 						const p = String(value.path === null || value.path === undefined ? "" : value.path);
 						const isDir = value.fileKind === "directory" || value.isDir === true;
-						const restore = () => {
-							vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-							return { text: "@" + vkAtRestoreText, continue: true };
-						};
 						const insertOf = (v) => ({ insert: {
 							source: "reference",
 							ref: v.mention,
@@ -3872,6 +4012,19 @@ function vkHomeDirsSync() {
 							appearance: v.isDir === true || v.fileKind === "directory" ? "folder" : "file",
 							clipboardText: v.mention
 						} });
+						const restore = () => {
+							vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
+							return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
+						};
+						// 点小箭头（drill）= 展开这一级目录：菜单保持打开，列表换成该目录内容
+						if (action === "drill" && isDir) {
+							if (vkAtBrowse.root === null) vkAtBrowse.root = p; // 记起点：「返回上一级」不越过它
+							vkAtBrowse.dir = p;
+							vkAtBrowse.sel = null;
+							vkAtBrowse.selEntry = null;
+							vkAtClearPicked();
+							trace("redraft"); return restore();
+						}
 						// 鼠标「在同一行上的第二次点击」才会被 mousedown 拦截留下 mousePick 标记。
 						// **不能看 via**：官方 settle() 里 via 恒为 "menu"（回车触发的 pick 也是它），
 						// 早先按 via 判断导致「选中后回车 = 打开了文件夹」。
@@ -3879,33 +4032,32 @@ function vkHomeDirsSync() {
 						vkAtBrowse.mousePick = null;
 						if (!byMouse) {
 							// 回车（以及其它不是「鼠标再点一次」的途径）= 在会话引用：
-							// 有选中项就引用选中项（避免与官方「高亮项」错位），没有则引用当前高亮这一条。
+							// 有选中项就引用选中项（避免与官方「高亮项」错位），没有则引用当前这一条。
 							vkAtClearPicked();
-							return insertOf(vkAtBrowse.selEntry !== null ? vkAtBrowse.selEntry : value);
+							trace("insert"); return insertOf(vkAtBrowse.selEntry !== null ? vkAtBrowse.selEntry : value);
 						}
 						// 已选中的目录再点一次（鼠标）：打开下一级（整份列表替换成该文件夹的内容）
 						if (isDir) {
-							if (vkAtBrowse.root === null) vkAtBrowse.root = p; // 记起点：「返回上一级」不得越过它
+							if (vkAtBrowse.root === null) vkAtBrowse.root = p;
 							vkAtBrowse.dir = p;
 							vkAtBrowse.sel = null;
 							vkAtBrowse.selEntry = null;
 							vkAtClearPicked();
-							return restore();
+							trace("redraft"); return restore();
 						}
 						// 已选中的文件再点一次（鼠标）：在会话引用
 						vkAtClearPicked();
-						return insertOf(value);
+						trace("insert"); return insertOf(value);
 					}
-					// 目录行的旧形态（VK_AT_ROW_TAG）：保留兼容，仍按「展开-收起」处理
+					// 目录行的旧形态（VK_AT_ROW_TAG）：点小箭头展开那一级
 					if (value.kind === VK_AT_ROW_TAG || (value.dirRow === true && action === "drill")) {
-						// 「点进去 = 展开那一级」（用户口径）：写回**共享**的展开集合 → 左栏文件栏同步展开/收起；
-						// 子项由文件栏那条 [expanded, entries] 的 effect 自动取回（@ 侧下一次 candidates 自己列）。
-						// 2026-09-13 按用户口径解绑：@ 菜单的旧「目录行」分支**不再写左栏文件栏的展开集**
-						// （原来 vkFileTreeToggle 会连带把左栏展开/收起）。@ 自己那份由 vkAtBrowse 走官方 drill。
-						// token 文本必须**原样**写回：官方 insertText 是「替换 token span」，空串会被判失败
-						// → 菜单关闭并复位（实测踩过）；continue 让菜单保持打开并按新状态重新取候选。
+						const dir = String(value.dir === undefined ? value.path || "" : value.dir);
+						if (action === "drill" && dir.length > 0) {
+							if (vkAtBrowse.root === null) vkAtBrowse.root = dir;
+							vkAtBrowse.dir = dir;
+						}
 						vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-						return { text: "@" + vkAtRestoreText, continue: true };
+						trace("redraft"); return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
 					}
 					if (value.kind === "session") {
 						// 会话引用：与官方 reference 源的 onPick 逐字一致（条目本身也是官方原样复制过来的）。
@@ -3926,19 +4078,19 @@ function vkHomeDirsSync() {
 							if (trace !== undefined && trace !== null) trace.section = { name: value.section, nowOpen: nowOpen };
 						} catch { /* 痕迹只给 CDP 取证用 */ }
 						vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-						return { text: "@" + vkAtRestoreText, continue: true };
+						trace("redraft"); return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
 					}
 					if (value.kind === VK_AT_EXPAND_TAG) {
 						vkAtExpanded.add(value.group);
 						// 把 token 原样写回（官方 insertText 是「替换 span」，文本必须与原样一致才算应用成功；
 						// 给空串会被判失败 → 菜单关掉并复位。实测踩过），continue 让菜单继续开着重新取候选
 						vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-						return { text: "@" + vkAtRestoreText, continue: true };
+						trace("redraft"); return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
 					}
 					if (value.kind === VK_AT_MORE_TAG) {
 						vkAtShowAllGroups = true;
 						vkAtRestoreText = String(value.q === null || value.q === undefined ? "" : value.q);
-						return { text: "@" + vkAtRestoreText, continue: true };
+						trace("redraft"); return { text: vkAtRedraftText(vkAtRestoreText), continue: true };
 					}
 					// 其余 kind（理论上不该出现）→ 无动作
 					return void 0;
@@ -3995,16 +4147,18 @@ function vkHomeDirsSync() {
 					src.candidates = async function vkPatchedAtCandidates(session, req) {
 						const items = await orig.call(this, session, req);
 						if (!Array.isArray(items)) return items;
-						// 「文件与文件夹」整节摘掉（文件区只留本源那套与文件栏对齐的镜像）；
-						// 「对话」节也摘掉，摘下来的条目缓存进 vkSessionPool，由本源以**可折叠的栏目**呈现
-						// （用户 2026-09-11 口径）。本源万一拿不到，这节会原样保留，功能不回退。
+						// 2026-09-29 用户口径：@ 列表**只留自研那套栏目**（本机文件搜索 / 工作区目录 /
+						// 最近打开 / 对话），官方源的「文件与文件夹」一节整节摘掉 —— 用户截图里它和自研的
+						// 「工作区目录」在列同一批目录，重复；而自研本源自带「点文件夹进下一级 + 面包屑 +
+						// 按关键词全根搜索」，官方的 drill 行为由它顶上。判据用 value 里的 kind==="file"
+						// （不看 section 文案，locale 无关，也不怕官方改中文标题）。
 						const sess = [];
 						const kept = items.filter((it) => {
 							if (it === null || it === undefined || typeof it.value !== "string") return true;
 							try {
 								const kind = JSON.parse(it.value).kind;
-								if (kind === "file") return false;
 								if (kind === "session") { sess.push(it); return false; }
+								if (kind === "file") return false;
 								return true;
 							} catch { return true; }
 						});
@@ -4013,7 +4167,9 @@ function vkHomeDirsSync() {
 						// （实测一次 50 条），而它的条目不带 section、点击走官方 onPick（我们拦不到，做不出
 						// 「点标题展开」的栏目行）。这里只在**空查询落地页**收敛首屏条数，让 @ 一打开不再铺满；
 						// 输入关键词检索时不受影响，全量照旧（官方自己的按关键词过滤）。
-						const q = String(req !== null && req !== undefined && req.query !== null && req.query !== undefined ? req.query : "");
+						// 2026-09-29：会话已全部摘进 vkSessionPool、kind:"file" 已整节过滤，kept 到这里基本
+						// 只剩官方其余零散条目；下面这段截断留着当兜底，不再影响自研栏目的呈现。
+						const q = vkAtStripZwsp(req !== null && req !== undefined && req.query !== null && req.query !== undefined ? req.query : "");
 						if (q.length > 0 || kept.length <= VK_AT_REF_SESSION_KEEP) return kept;
 						return kept.slice(0, VK_AT_REF_SESSION_KEEP);
 					};
@@ -4097,12 +4253,15 @@ function vkHomeDirsSync() {
 						const origCandidates = def.candidates;
 						def.candidates = async (session, req) => {
 							const items = await origCandidates.call(def, session, req);
-							vkAtLastItems = Array.isArray(items) ? items : [];
+							if (!Array.isArray(items)) return items;
+							vkAtLastItems = items;
 							// DOM 还没渲染完，等一帧再补「选中描边 / 顶部钉住」（重取后 React 会重建整行）
 							try {
 								requestAnimationFrame(() => { vkAtSyncPicked(); vkAtSyncPinnedNav(); });
 							} catch { /* 无 rAF 环境：靠 MutationObserver 兜底 */ }
-							return items;
+							// 官方 pick 的判据是候选对象上的 `drill === true`：带上它，行尾才会出现那颗
+							// 「展开/进入下一级」的小箭头（走官方 drill 通道，菜单保持打开）。
+							return items.map((it) => (vkAtNeedsDrill(it) ? Object.assign({}, it, { drill: true }) : it));
 						};
 						service.registerSource(def);
 						globalThis.__VK_AT_SOURCE__ = { stage: "ok", at: new Date().toISOString(), roots: vkAtRoots() };

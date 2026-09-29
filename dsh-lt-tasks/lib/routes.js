@@ -44,6 +44,9 @@ export function registerRoutes(ctx) {
       const p = url.pathname;
       const root = store.resolveTasksRoot();
       try {
+        if (p === "/lt-tasks/roots" && req.method === "GET") {
+          return sendJson(res, 200, { ok: true, tasksRoot: root, workspaceRoot: store.resolveWorkspaceRoot() });
+        }
         if (p === "/lt-tasks/list" && req.method === "GET") {
           const tasks = await store.listTasks(root);
           for (const t of tasks) {

@@ -462,10 +462,47 @@ window.__ModuleLoader__.load({
 		 * 取不到（插件刚加载 / 无会话面）时返回空串，调用方回落到一个与「无会话」等价的桶。
 		 */
 		function vkCurrentSessionId() {
+			// ★主口径（对照官方客户端复核，2026-09-29）：中间栏正在显示哪个会话，就是 list 快照里
+			// `retainedBy.mainView > 0` 的那一行 —— 官方 layout / session / workspace / cordis /
+			// settings-general / open-in-app 六处取当前会话用的都是这一句。快照字段只有
+			// { ids, byId, phase, projectionsBySession }，`current` / `currentId` 早就不存在了。
+			try {
+				const byId = ctxRef.current.get("sessions").list.getSnapshot().byId;
+				const rows = byId === undefined || byId === null ? [] : Object.keys(byId);
+				for (const id of rows) {
+					const row = byId[id];
+					if (row !== undefined && row !== null && ((row.retainedBy && row.retainedBy.mainView) || 0) > 0) return id;
+				}
+			} catch { /* 落到下面的兜底 */ }
+			// 兜底：旧字段名
+			// DSH 1.7 的 sessions 快照**只剩 byId**，老的 `current` / `currentId` 都没了。
+			// 只认 `current` 会永远拿到空串（→ 双击文件被判成「没有会话」，用户 2026-09-29 报的提示）。
+			// 三层取值口径与 dsh-vk-layout 一致。
 			try {
 				const snapshot = ctxRef.current.get("sessions").list.getSnapshot();
-				return snapshot !== undefined && snapshot !== null && typeof snapshot.current === "string" ? snapshot.current : "";
-			} catch { return ""; }
+				if (snapshot !== undefined && snapshot !== null) {
+					for (const key of ["current", "currentId", "activeId", "selectedId"]) {
+						const value = snapshot[key];
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ② */ }
+			try {
+				const svc = ctxRef.current.get("sessions");
+				for (const key of ["current", "currentId", "activeId"]) {
+					if (typeof svc[key] === "function") {
+						const value = svc[key]();
+						if (typeof value === "string" && value.length > 0) return value;
+					}
+				}
+			} catch { /* 落到 ③ */ }
+			try {
+				const row = document.querySelector("[data-row-key^=\"session:\"][aria-selected=\"true\"]")
+					|| document.querySelector("[data-row-key^=\"session:\"][class*=\"_selected\"]");
+				const raw = row === null ? "" : String(row.getAttribute("data-row-key") || "");
+				if (raw.indexOf("session:") === 0) return raw.slice("session:".length);
+			} catch { /* ignore */ }
+			return "";
 		}
 		/** 文件栏两份列表（最近打开 / 文件列表）的落盘键：**按会话隔离**，键里带会话 id。 */
 		function vkSessionKey(sid, kind) {

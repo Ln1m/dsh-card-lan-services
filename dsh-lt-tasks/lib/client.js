@@ -8,11 +8,30 @@ window.__ModuleLoader__.load({
     let react = require("react");
     let ui = require("@deepseek-ai/dsh-client-ui-primitives");
     const h = react.createElement;
-    const IconPlus = ui.IconPlusOutline16;
-    const IconSearch = ui.IconSearchOutline16;
-    const IconClose = ui.IconCloseFill14;
-    const IconTrash = ui.IconTrashOutline16;
-    const IconEdit = ui.IconEditOutline16;
+    /* 1.7 起官方 primitives 删掉了带尺寸后缀的图标导出（IconPlusOutline16 / IconCloseFill14 …），
+       直接引用会得到 undefined → h(undefined) 触发 React #130，整个任务 pane 渲染失败（2026-09-29 实测）。
+       三级兜底：新名（无后缀）→ 旧名（带后缀）→ 本地内联 SVG。 */
+    const pickIcon = (names) => {
+      for (const name of names) {
+        try {
+          const found = ui === null || ui === undefined ? undefined : ui[name];
+          if (found !== null && found !== undefined) return found;
+        } catch { /* 换下一个名字 */ }
+      }
+      return null;
+    };
+    const svgIcon = (specs) => function FallbackIcon(props) {
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 16;
+      return h("svg", {
+        viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor",
+        strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round"
+      }, specs.map((spec, i) => h(spec.t, Object.assign({ key: i }, spec.p))));
+    };
+    const IconPlus = pickIcon(["IconPlusOutline", "IconPlusOutline16"]) || svgIcon([{ t: "path", p: { d: "M12 5v14" } }, { t: "path", p: { d: "M5 12h14" } }]);
+    const IconSearch = pickIcon(["IconSearchOutline", "IconSearchOutline16"]) || svgIcon([{ t: "circle", p: { cx: 11, cy: 11, r: 8 } }, { t: "path", p: { d: "m21 21-4.35-4.35" } }]);
+    const IconClose = pickIcon(["IconCloseFill", "IconCloseFill14"]) || svgIcon([{ t: "path", p: { d: "M18 6 6 18" } }, { t: "path", p: { d: "m6 6 12 12" } }]);
+    const IconTrash = pickIcon(["IconTrashOutline", "IconTrashOutline16"]) || svgIcon([{ t: "path", p: { d: "M3 6h18" } }, { t: "path", p: { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" } }, { t: "path", p: { d: "M10 11v6" } }, { t: "path", p: { d: "M14 11v6" } }]);
+    const IconEdit = pickIcon(["IconEditOutline", "IconEditOutline16"]) || svgIcon([{ t: "path", p: { d: "M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" } }]);
     const Modal = ui.Modal;
     const Button = ui.Button;
     const Frag = react.Fragment;
@@ -383,15 +402,15 @@ window.__ModuleLoader__.load({
       const [resetKey, setResetKey] = react.useState(0);
       const searchRootRef = react.useRef(null);
 
-      // 切回任务 tab 时重置：收起详情/搜索、刷新列表、分组折叠（TaskList remount）
+      // 切走任务 tab 时重置：收起详情/搜索、分组折叠（TaskList remount）。
+      // 放在「切走」这一拍，不放「切回」：切回再收会先闪一下展开态（用户报的「闪一下才收起」）。
       react.useEffect(() => {
-        if (!active) return;
+        if (active !== false) return;
         setSelected(null);
         setCreating(false);
         setSearch("");
         setSearchOpen(false);
         setResetKey((k) => k + 1);
-        loadTasks();
       }, [active]);
 
       // 点击搜索框外部时收起（有搜索词则保留，学习官方行为）

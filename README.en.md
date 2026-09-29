@@ -16,6 +16,13 @@ Left column: file tree, file opener, tools tab, LAN services, long-running tasks
 | `dsh-lan-services` | Probe ports 3090-3099, list titles and LAN URLs, start/stop in one click |
 | `dsh-lt-tasks` | Multi-window long-running task management: a task is a durable folder |
 
+## Release lines
+
+| Release | DSH line | Notes |
+|---|---|---|
+| `v0.1.1` | 0.1.7 | Features developed on the local DSH 0.1.7 line; this update |
+| `v0.1.0` | 0.1.6 | Last release of the DSH 0.1.6 line; stays usable, no further updates |
+
 ## Install
 
 ```sh
@@ -32,11 +39,11 @@ Or install the whole family on Windows PowerShell:
 Install straight from the release, no clone needed:
 
 ```sh
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-tree-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-open-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-extensions-panel-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lan-services-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lt-tasks-0.7.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-files-tree-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-files-open-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-extensions-panel-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-lan-services-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-lt-tasks-0.7.1.tgz"
 ```
 
 If the install fails with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` (a TLS-intercepting proxy; Node does not read the system CA store by default), run `$env:NODE_OPTIONS='--use-system-ca'` first.

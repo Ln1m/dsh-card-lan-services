@@ -1,6 +1,6 @@
 {
   "name": "dsh-files-open",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "文件家族 B：右栏「打开本机文件」标签，可独立安装",
   "type": "module",
   "main": "lib/index.js",

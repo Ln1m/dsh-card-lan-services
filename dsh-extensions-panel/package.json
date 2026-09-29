@@ -1,6 +1,6 @@
 {
     "name": "dsh-extensions-panel",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "DSH 功能栏插件：两张卡片（虚拟显示器开关、移动端访问）。入口按区域归位——注册官方 sidebar.panellist 图标 + main 中央面板（同一 id 配对）；装了 dsh-vk-suite 时改用它的左栏「功能」Tab。",
     "type": "module",
     "main": "lib/index.js",

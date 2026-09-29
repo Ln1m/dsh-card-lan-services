@@ -16,6 +16,13 @@
 | `dsh-lan-services` | 探测 3090~3099 端口的本地服务，列出标题与局域网网址，一键启停 |
 | `dsh-lt-tasks` | 多窗口长期任务管理：一个任务 = 一个持久文件夹 |
 
+## 版本线
+
+| 版本 | 对应 DSH | 说明 |
+|---|---|---|
+| `v0.1.1` | 0.1.7 | 本机 0.1.7 线继续开发的功能（本次同步） |
+| `v0.1.0` | 0.1.6 | 0.1.6 线的最后一版，保留可用、不再更新 |
+
 ## 装
 
 ```sh
@@ -32,11 +39,11 @@ dsh plugin --profile web add file:<本仓库>/dsh-files-tree
 不克隆仓库、直接从 Release 装（一行一个包）：
 
 ```sh
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-tree-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-files-open-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-extensions-panel-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lan-services-0.1.0.tgz"
-dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lt-tasks-0.7.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-files-tree-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-files-open-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-extensions-panel-0.1.1.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-lan-services-0.1.0.tgz"
+dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.1/dsh-lt-tasks-0.7.1.tgz"
 ```
 
 装的时候若报 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`（国内出口证书注入，Node 默认不读系统证书库），先执行 `$env:NODE_OPTIONS='--use-system-ca'` 再装。
