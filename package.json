@@ -49,8 +49,8 @@
         "type": "git",
         "url": "git+https://github.com/Ln1m/dsh-lan-services.git"
     },
-    "homepage": "https://github.com/Ln1m/dsh-lan-services#readme",
+    "homepage": "https://github.com/Ln1m/dsh-card-lan-services#readme",
     "bugs": {
-        "url": "https://github.com/Ln1m/dsh-lan-services/issues"
+        "url": "https://github.com/Ln1m/dsh-card-lan-services/issues"
     }
 }

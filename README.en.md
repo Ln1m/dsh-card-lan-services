@@ -1,6 +1,6 @@
 # dsh-lan-services
 
-> This branch is the **vk build**: vk slots only, and [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) (contract + layout) must be installed first. The vk-free build is on the [official branch](https://github.com/Ln1m/dsh-lan-services/tree/official).
+> This branch is the **vk build**: vk slots only, and [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) (contract + layout) must be installed first. The vk-free build is on the [official branch](https://github.com/Ln1m/dsh-card-lan-services/tree/official).
 > **The vk build is the recommended one**: the sidebar tab switcher (Sessions / Files / Tasks / Extensions) plus the right-column and settings positions all come from the [dsh-vk-suite](https://github.com/Ln1m/dsh-vk-suite) skeleton, so only the vk build lands in them; the vk-free build needs no skeleton but mounts into official slots only, shaped by the official UI.
 
 [中文](README.md) · English
