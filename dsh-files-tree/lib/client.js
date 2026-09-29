@@ -2128,64 +2128,7 @@ function vkHomeDirsSync() {
 	for (const d of next) VK_HOME_DIRS.push(d);
 }
 
-		const react = require('react');
-		const contract = require('dsh-vk-contract');
-		const h = react.createElement;
-		const VK = contract.VK;
-		const vkCard = contract.vkCard;
-		const ctxRef = { current: null };
 
-		const _VK_ICONS = {
-			menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
-			tasks: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
-			folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
-			folderOpen: '<path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/>',
-			chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-			eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
-			eyeOff: '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>',
-			search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
-			edit: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
-			trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
-			check: '<path d="M20 6 9 17l-5-5"/>',
-			close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-			save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>',
-			columns: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/>',
-			fullscreen: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
-			file: '<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/>',
-			fileText: '<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
-			image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
-			video: '<path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
-			music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
-			archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
-			lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
-			tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-			atom: '<circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/><path d="M15.7 15.7c4.52-4.54 6.54-9.87 4.5-11.9-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5Z"/>',
-			terminal: '<path d="m4 17 6-5-6-5"/><path d="M12 19h8"/>',
-			open: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/>',
-			zoomIn: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>',
-			zoomOut: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>',
-			gear: '<circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>',
-			gitBranch: '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
-			box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
-			chevronLeft: '<path d="m15 18-6-6 6-6"/>',
-			// 侧栏/面板类图标（左侧栏 Tab 条最右端的「打开拓展栏」按钮用）
-			panelRight: '<rect x="3" y="4" width="18" height="16" rx="2"/><line x1="15" y1="4" x2="15" y2="20"/>',
-			// 拓展栏顶栏第 4 颗按钮：上下分界（上=官方拓展栏，下=命令行）
-			panelBottom: '<rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="13" x2="21" y2="13"/><path d="m6.6 15.6 2.4 1.7-2.4 1.7" stroke-width="1.6"/><line x1="11" y1="19" x2="15" y2="19" stroke-width="1.6"/>',
-			chevronRight: '<path d="m9 18 6-6-6-6"/>',
-			chevronDown: '<path d="m6 9 6 6 6-6"/>',
-			chevronUp: '<path d="m18 15-6-6-6 6"/>',
-			arrowUp: '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
-			hardDrive: '<line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>',
-			refresh: '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
-			monitor: '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
-			home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>'
-		};
-		function VIcon({ name, size = 14 }) {
-			const d = _VK_ICONS[name];
-			if (!d) return null;
-			return h("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", style: { flex: "none", display: "block" }, dangerouslySetInnerHTML: { __html: d } });
-		}
 		const CSS = [
 			".vk_pickInput{box-sizing:border-box;width:100%;background:var(--dsw-specific-input-major);border:1px solid var(--dsw-alias-border-l2);border-radius:6px;color:var(--dsw-alias-label-primary);font-size:12px;padding:6px 9px;outline:none;font-family:inherit;transition:border-color .12s,box-shadow .12s}",
 			".vk_pickInput:hover{border-color:var(--dsw-alias-border-l3)}",
@@ -2378,60 +2321,15 @@ function vkHomeDirsSync() {
 			document.head.appendChild(tag);
 		})();
 
-		/** 路径尾段（`D:\a\b.txt` → `b.txt`；没有分隔符时原样返回）。 */
-		function pathBase(p) {
-			const s = String(p);
-			const cut = Math.max(s.lastIndexOf("\\"), s.lastIndexOf("/"));
-			return cut < 0 ? s : s.slice(cut + 1);
-		}
 		// 文件树落地页（未打开具体文件夹时）：折叠展示的常用根目录，展开即可浏览；要固定展示自己的目录，在这里补条目
 		const HOME_DIRS = VK_HOME_DIRS;
-		/** 路径归一化：去掉首尾空白与尾部分隔符，盘根补回一条反斜杠，统一小写（Windows 不区分大小写）。 */
-		function normPath(p) {
-			if (typeof p !== "string") return "";
-			const trimmed = p.trim();
-			const withRoot = /^[A-Za-z]:$/.test(trimmed) ? trimmed + "\\" : trimmed;
-			const bare = withRoot.replace(/[\\/]+$/, "");
-			return (/^[A-Za-z]:$/.test(bare) ? bare + "\\" : bare).toLowerCase();
-		}
 		/** 是否落在工作区 / 长期任务的固定目录里（这类目录不进「最近打开」，也不写记录）。 */
 		function isHomeDirPath(p) {
 			const n = normPath(p);
 			return HOME_DIRS.some((d) => normPath(d.path) === n);
 		}
 		const vkFileTreeState = { expanded: new Set(), showHidden: false, subs: new Set() };
-		// ── 诊断探针（2026-09-12 晚，临时；查完「还是会自己收」就删）──────────────────────
-		// 自报数（DevTools 控制台）：JSON.stringify(__VK_DIAG__)
-		//   · mounts.k 一直涨 → FileTree 被反复重挂载（本地 state 复位 → 看起来「自己收」）
-		//   · unmounts  涨  → 同上，且能看出是哪次渲染卸的
-		//   · clears.<来源> 涨 → 展开集真的被某条代码路径清了，来源直接点名
-		const vkDiag = { mountedAt: new Date().toISOString(), mounts: 0, unmounts: 0, clears: {}, lastMounts: [], lastUnmounts: [], events: [], uiSeq: [] };
 		try { globalThis.__VK_DIAG__ = vkDiag; } catch { /* 非浏览器环境 */ }
-		/** 统一录入一条诊断事件（带调用栈）。 */
-		function vkDiagEvent(kind, detail) {
-			try {
-				vkDiag.events.push({ at: new Date().toISOString().slice(11, 23), kind: kind, detail: detail, stack: String(new Error().stack || "").split("\n").slice(2, 6).join(" <- ") });
-				if (vkDiag.events.length > 80) vkDiag.events.shift();
-			} catch { /* 探针失败不影响行为 */ }
-		}
-		/** 统一的时间线录入：把「点击 / 栏目开合 / 卸载」放进同一条序列里，用来对齐先后。 */
-		function vkDiagUI(kind, detail) {
-			try {
-				vkDiag.uiSeq.push({ at: new Date().toISOString().slice(11, 23), kind: kind, detail: detail });
-				if (vkDiag.uiSeq.length > 120) vkDiag.uiSeq.shift();
-			} catch { /* 探针失败不影响行为 */ }
-		}
-		/** 清空展开集：正常路径与诊断共用，reason 就是「谁清的」。 */
-		function vkFileTreeClearExpanded(reason) {
-			if (vkFileTreeState.expanded.size === 0) return;
-			vkDiag.clears[reason] = (vkDiag.clears[reason] || 0) + 1;
-			vkFileTreeSetExpanded(new Set());
-			vkDiagEvent("clear:" + reason, "");
-		}
-		function vkFileTreeSubscribe(fn) {
-			vkFileTreeState.subs.add(fn);
-			return () => { vkFileTreeState.subs.delete(fn); };
-		}
 		function vkFileTreeSetExpanded(next) {
 			vkFileTreeState.expanded = next instanceof Set ? new Set(next) : new Set(next);
 			const list = [...vkFileTreeState.expanded];
@@ -2470,10 +2368,6 @@ function vkHomeDirsSync() {
 
 		// 两份状态都不落盘：刷新页面即回到默认（全折叠）。
 		const vkSectionState = { open: null, subs: new Set() }; // open = 当前展开的栏目名；null = 全折叠
-		function vkSectionSubscribe(fn) {
-			vkSectionState.subs.add(fn);
-			return () => { vkSectionState.subs.delete(fn); };
-		}
 		/** 栏目是否展开（@ 落地页；默认为 null → 全折叠）。 */
 		function vkSectionIsOpen(name) {
 			return vkSectionState.open !== null && vkSectionState.open === String(name);
@@ -2486,54 +2380,6 @@ function vkHomeDirsSync() {
 			return vkSectionState.open === k;
 		}
 
-		function vkCurrentSessionId() {
-			// ★主口径（对照官方客户端复核，2026-09-29）：中间栏正在显示哪个会话，就是 list 快照里
-			// `retainedBy.mainView > 0` 的那一行 —— 官方 layout / session / workspace / cordis /
-			// settings-general / open-in-app 六处取当前会话用的都是这一句。快照字段只有
-			// { ids, byId, phase, projectionsBySession }，`current` / `currentId` 早就不存在了，
-			// 只靠下面三层兜底会永远拿到空串（用户 2026-09-29 报的「先在中间栏打开一个会话」）。
-			try {
-				const byId = ctxRef.current.get("sessions").list.getSnapshot().byId;
-				const rows = byId === undefined || byId === null ? [] : Object.keys(byId);
-				for (const id of rows) {
-					const row = byId[id];
-					if (row !== undefined && row !== null && ((row.retainedBy && row.retainedBy.mainView) || 0) > 0) return id;
-				}
-			} catch { /* 落到下面的兜底 */ }
-			// 兜底：旧字段名（1.6 时期是 current）
-			// DSH 1.7 的 sessions 快照**只剩 byId**，老的 `current` / `currentId` 都没了。
-			// 以前这里只认 `current` → 永远空串 → 双击文件在右栏打开时被判成「没有会话」，
-			// 弹「先在中间栏打开一个会话」（用户 2026-09-29 报的）。三层取值口径与 dsh-vk-layout 一致。
-			try {
-				const snapshot = ctxRef.current.get("sessions").list.getSnapshot();
-				if (snapshot !== undefined && snapshot !== null) {
-					for (const key of ["current", "currentId", "activeId", "selectedId"]) {
-						const value = snapshot[key];
-						if (typeof value === "string" && value.length > 0) return value;
-					}
-				}
-			} catch { /* 落到 ② */ }
-			try {
-				const svc = ctxRef.current.get("sessions");
-				for (const key of ["current", "currentId", "activeId"]) {
-					if (typeof svc[key] === "function") {
-						const value = svc[key]();
-						if (typeof value === "string" && value.length > 0) return value;
-					}
-				}
-			} catch { /* 落到 ③ */ }
-			try {
-				const row = document.querySelector("[data-row-key^=\"session:\"][aria-selected=\"true\"]")
-					|| document.querySelector("[data-row-key^=\"session:\"][class*=\"_selected\"]");
-				const raw = row === null ? "" : String(row.getAttribute("data-row-key") || "");
-				if (raw.indexOf("session:") === 0) return raw.slice("session:".length);
-			} catch { /* ignore */ }
-			return "";
-		}
-		/** 文件栏两份列表（最近打开 / 文件列表）的落盘键：**按会话隔离**，键里带会话 id。 */
-		function vkSessionKey(sid, kind) {
-			return "dsh-vscode-layout:" + kind + ":v1:" + (typeof sid === "string" && sid.length > 0 ? sid : "none");
-		}
 
 		function vkStripTrailingAtToken(text) {
 			const s = typeof text === "string" ? text : "";
@@ -3063,35 +2909,6 @@ function vkHomeDirsSync() {
 			return vkCurrentSessionCwd();
 		}
 		/**
-		 * 文件栏**当前状态**的镜像（由侧栏组件在状态变化时写入），@ 源的落地页据此镜像文件栏的三组结构：
-		 *   treeRoot   —— 文件栏当前打开的根（含 switch_workspace_root 写入的会话根），排在 @ 检索根的第一位
-		 *   autoRoot   —— 文件栏「最近打开」里那条会话建议根（/vscode-files/root 轮询拿到）
-		 *   recentDirs —— 文件栏「最近打开」列表（localStorage dsh-vscode-layout:recents:v1）
-		 *   fileList   —— 文件栏「文件列表」（localStorage dsh-vscode-layout:filelist:v1，点过的文件）
-		 *   sessionFiles —— 「当前会话文件」（host /vscode-files/session-files：本会话贴入 + Agent 写/改 + 会话根近期改动）
-		 *   sessionDirs  —— 本会话贴进对话的**文件夹**（并入「最近打开」）
-		 */
-		const RECENTS_MAX = 8;
-		// 拖入文件的自动收件目录（~/.dsh/drop-inbox/<sessionId>）：这类路径本身是 UUID 乱码，
-		// 在「最近打开」里用其内含的首个文件名做可辨识标签
-		const DROP_INBOX_RE = /[\\/]\.dsh[\\/]drop-inbox[\\/][^\\/]+$/i;
-		function isDropInboxDir(p) {
-			return typeof p === "string" && DROP_INBOX_RE.test(p);
-		}
-		function dropDirLabel(p, e) {
-			if (e && e.ok && Array.isArray(e.files) && e.files.length > 0) {
-				const n = String(e.files[0].name || "").trim();
-				if (n.length > 0) {
-					const i = n.lastIndexOf(".");
-					return "贴入 · " + (i > 0 ? n.slice(0, i) : n);
-				}
-			}
-			return "贴入文件";
-		}
-		function landingLabel(p, e) {
-			return isDropInboxDir(p) ? dropDirLabel(p, e) : pathBase(p);
-		}
-		/**
 		 * 读「最近打开」：**按会话隔离**（键 = dsh-vscode-layout:recents:v1:<sessionId>；取不到会话落 "none" 桶）。
 		 * 读取即清洗：剔掉工作区固定目录与重复项（大小写/尾斜杠变体算同一个）。
 		 * 旧版全局键的残留数据不读取、也不清理，留给用户自己处置。
@@ -3113,94 +2930,6 @@ function vkHomeDirsSync() {
 				seen.add(k);
 				out.push(p);
 				if (out.length >= RECENTS_MAX) break;
-			}
-			return out;
-		}
-		// ──────────────────────────────────────────────────────────────
-		// 文件图标（VS Code 式）：代码/数据类 = 按语言着色的字母徽章，媒体/二进制类 = 单色线性图标。
-		// 一张扁平表：值写 `svg:<图标名>` 走线性图标，写 `chip:<后缀>|<徽章文字>` 走彩色 chip
-		// （后缀对应样式表里的 .vk_i<后缀>，浅/深色两套颜色都定义在那儿）。
-		// ──────────────────────────────────────────────────────────────
-		const VK_FILE_ICON = {
-			js: "chip:Js|JS", mjs: "chip:Js|JS", cjs: "chip:Js|JS",
-			ts: "chip:Ts|TS", mts: "chip:Ts|TS", cts: "chip:Ts|TS",
-			jsx: "svg:atom", tsx: "svg:atom",
-			vue: "chip:Vue|V", svelte: "chip:Svelte|S", py: "chip:Py|Py",
-			json: "chip:Json|{}", jsonc: "chip:Json|{}",
-			html: "chip:Html|<>", htm: "chip:Html|<>", xml: "chip:Xml|<>", svg: "chip:Svg|<>",
-			css: "chip:Css|#", scss: "chip:Scss|#", sass: "chip:Scss|#", less: "chip:Less|#",
-			md: "chip:Md|Md", markdown: "chip:Md|Md",
-			yml: "chip:Yaml|Y", yaml: "chip:Yaml|Y",
-			sh: "svg:terminal", bash: "svg:terminal", zsh: "svg:terminal", ps1: "svg:terminal", bat: "svg:terminal", cmd: "svg:terminal",
-			toml: "svg:gear", ini: "svg:gear", cfg: "svg:gear", conf: "svg:gear", env: "svg:gear", properties: "svg:gear",
-			txt: "chip:Txt|Txt", log: "chip:Txt|Txt",
-			sql: "chip:Sql|DB", graphql: "chip:Gql|Gql", gql: "chip:Gql|Gql",
-			rs: "chip:Rs|Rs", go: "chip:Go|Go", java: "chip:Java|Jv",
-			c: "chip:C|C", h: "chip:C|C",
-			cpp: "chip:Cpp|C+", cc: "chip:Cpp|C+", cxx: "chip:Cpp|C+", hpp: "chip:Cpp|C+",
-			cs: "chip:Cs|C#", rb: "chip:Rb|Rb", php: "chip:Php|Php",
-			kt: "chip:Kt|K", kts: "chip:Kt|K", swift: "chip:Swift|Sw",
-			lua: "chip:Lua|Lu", r: "chip:R|R", wasm: "chip:Wasm|W",
-			woff: "chip:Font|A", woff2: "chip:Font|A", ttf: "chip:Font|A", otf: "chip:Font|A", eot: "chip:Font|A",
-			exe: "svg:box", dll: "svg:box", bin: "svg:box", dat: "svg:box", msi: "svg:box",
-			png: "svg:image", jpg: "svg:image", jpeg: "svg:image", gif: "svg:image", webp: "svg:image",
-			bmp: "svg:image", ico: "svg:image", icns: "svg:image", avif: "svg:image",
-			mp4: "svg:video", mov: "svg:video", avi: "svg:video", mkv: "svg:video", webm: "svg:video",
-			mp3: "svg:music", wav: "svg:music", ogg: "svg:music", flac: "svg:music",
-			zip: "svg:archive", tar: "svg:archive", gz: "svg:archive", rar: "svg:archive", "7z": "svg:archive", bz2: "svg:archive", xz: "svg:archive",
-			pdf: "svg:fileText", lock: "svg:lock",
-			vsd: "chip:Visio|Vi", vsdx: "chip:Visio|Vi", vsdm: "chip:Visio|Vi"
-		};
-		/** 按整名认的特殊文件（键必须全小写；查不到再退回扩展名）。 */
-		const VK_FILE_ICON_NAME = {
-			"package.json": "svg:box", ".npmrc": "svg:box", ".nvmrc": "svg:box",
-			"package-lock.json": "svg:lock", "yarn.lock": "svg:lock", "pnpm-lock.yaml": "svg:lock",
-			"tsconfig.json": "chip:Ts|TS",
-			"dockerfile": "svg:box", "docker-compose.yml": "svg:box", "docker-compose.yaml": "svg:box", ".dockerignore": "svg:box",
-			"makefile": "svg:tool", "cmakelists.txt": "svg:tool",
-			"license": "svg:fileText", "license.md": "svg:fileText", "license.txt": "svg:fileText",
-			".gitignore": "svg:gitBranch", ".gitattributes": "svg:gitBranch", ".gitmodules": "svg:gitBranch"
-		};
-		/** 名字（或目录）→ 图标描述：目录按开合给文件夹图标；文件先整名、再扩展名，认不出给通用文件图标。 */
-		function iconOf(name, isDir, expanded) {
-			if (isDir === true) return expanded === true ? "svg:folderOpen" : "svg:folder";
-			const lower = String(name).toLowerCase();
-			const dot = lower.lastIndexOf(".");
-			const hit = VK_FILE_ICON_NAME[lower] !== undefined ? VK_FILE_ICON_NAME[lower] : VK_FILE_ICON[dot >= 0 ? lower.slice(dot + 1) : ""];
-			return hit !== undefined ? hit : "svg:file";
-		}
-		/** 渲染图标描述：svg 前缀走单色线性图标，chip 前缀走 `后缀|文字` 彩色徽章。 */
-		function renderFileIcon(spec0) {
-			const spec = String(spec0 === null || spec0 === undefined ? "" : spec0);
-			if (spec.startsWith("svg:")) return h("span", { className: "vk_icon vk_iconSvg" }, h(VIcon, { name: spec.slice(4), size: 14 }));
-			const parts = spec.slice(5).split("|");
-			return h("span", { className: "vk_icon vk_iconChip vk_i" + parts[0] }, parts[1]);
-		}
-		/** 是否盘根本身（`D:\` / `C:/`）。 */
-		function isRootDriveOf(p) {
-			return typeof p === "string" && /^[A-Za-z]:[\\/]$/.test(p);
-		}
-		/** 上一级目录（盘根返回自身；没有分隔符时原样返回）。 */
-		function parentOfPath(p) {
-			const s = String(p === null || p === undefined ? "" : p).replace(/[\\/]+$/, "");
-			const cut = Math.max(s.lastIndexOf("\\"), s.lastIndexOf("/"));
-			if (cut < 0) return s;
-			const head = s.slice(0, cut);
-			return /^[A-Za-z]:$/.test(head) ? head + "\\" : head;
-		}
-		/** 绝对路径 → 逐级面包屑 [{label, path}]（盘符单独成一级；相对路径从第一段起累积）。 */
-		function crumbPartsOf(p) {
-			if (typeof p !== "string" || p.length === 0) return [];
-			const out = [];
-			let acc = "";
-			for (const seg of p.split(/[\\/]+/).filter((s) => s.length > 0)) {
-				if (out.length === 0 && /^[A-Za-z]:$/.test(seg)) {
-					acc = seg + "\\";
-					out.push({ label: acc, path: acc });
-					continue;
-				}
-				acc += seg + "\\";
-				out.push({ label: seg, path: acc });
 			}
 			return out;
 		}
@@ -4286,69 +4015,6 @@ function vkHomeDirsSync() {
 			attempt();
 		}
 
-		/**
-		 * 官方条目镜像（路线 B 的核心手法）：把官方某个插槽里**胜出的那一条注册**
-		 * （组件本体 + store 句柄 + inject 业务面 + locale 命名空间）整体搬到自研私有插槽上再注册一次，
-		 * 由框架照常给它装配全套座位。
-		 *
-		 * 为什么只能这么做（三条都是源码/实测结论，别再试别的路）：
-		 * ① 官方插槽的**声明是排他的**：一个键只能有一个声明者，后声明者抛 `already declared`，
-		 *    而这一抛会拖垮整条 ui-sidebar（实测整页只剩 Failed to load plugins）。所以自研绝不能声明
-		 *    `sidebar.workspaces` 这类官方键；
-		 * ② `renderSlot` 只授予「本条目 children 里声明过的键」，因此也**借不到**官方的 renderSlot 绑定；
-		 * ③ 但 register 的 `component` / `store` / `inject` / `locale` 都是可复用的普通值——换到自己声明的
-		 *    私有键上注册一次，`standardKit` 会照常下发根标准座位（useSessions / useWorkspaces / usePanelInfo /
-		 *    useSessionPendingInteraction）、store 实例与 `actions`、`t`（官方命名空间）以及官方 inject 面全部回调。
-		 *    → 拿到的是**官方组件本体**，零 prop 拼装、零业务重写。
-		 *
-		 * @param ctx - 插件 ctx。
-		 * @param sourceKey - 官方插槽键（被镜像的一方）。
-		 * @param targetKey - 自研私有插槽键（镜像落点，必须由自研声明）。
-		 * @param options - 可选：`children`（镜像注册要声明的子插槽表）、`component`（把官方组件包一层，
-		 *                  例如重定向 renderSlot）、`inject`（包装官方注入面）、`pick`（从候选里挑要镜像的那条）。
-		 * @returns { sync, dispose } —— `sync` 幂等；官方那条换了实现（或先注册后卸载）会自动重挂。
-		 */
-		function vkCreateMirror(ctx, sourceKey, targetKey, options) {
-			const slots = ctx.slots;
-			const config = options === undefined || options === null ? {} : options;
-			let dispose = null;
-			let mirrored = null;
-			const winnerOf = () => {
-				if (typeof config.pick === "function") return config.pick(typeof slots.entries === "function" ? slots.entries(sourceKey) : []);
-				const winners = typeof slots.entriesOfSlot === "function" ? slots.entriesOfSlot(sourceKey) : [];
-				if (winners.length > 0) return winners[0];
-				const all = typeof slots.entries === "function" ? slots.entries(sourceKey) : [];
-				return all.length > 0 ? all[0] : void 0;
-			};
-			const drop = () => {
-				const current = dispose;
-				dispose = null;
-				mirrored = null;
-				if (current !== null) {
-					try { current(); } catch { /* 官方那条已自行卸载时清理是空操作 */ }
-				}
-			};
-			const sync = () => {
-				const source = winnerOf();
-				if (source === mirrored) return;
-				drop();
-				if (source === void 0) return;
-				mirrored = source;
-				try {
-					dispose = slots.register({
-						name: targetKey,
-						children: config.children,
-						store: source.store,
-						inject: typeof config.inject === "function" ? config.inject(source) : source.inject,
-						locale: source.locale
-					}, typeof config.component === "function" ? config.component(source) : source.component);
-				} catch (error) {
-					drop();
-					try { ctx.logger.warn("[vscode-layout] 镜像官方条目失败 " + sourceKey + " → " + targetKey + "：" + String(error && error.message ? error.message : error)); } catch { /* ignore */ }
-				}
-			};
-			return { sync, dispose: drop };
-		}
 
 		/**
 		 * 在官方右侧栏多标签里打开一个地址。
@@ -4408,8 +4074,6 @@ function vkHomeDirsSync() {
 		const VK_CHAT_FILE_LINK = true;
 		const VK_FILE_LINK_CLASS_RE = /_fileLink$/;
 		const VK_CHAT_HINT_CLASS = "vk_chatFileHint";
-		/**
-
 		function vkChatLinkText(btn) {
 			let out = "";
 			for (const node of btn.childNodes) {

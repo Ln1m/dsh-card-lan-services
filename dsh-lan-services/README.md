@@ -14,8 +14,8 @@ DSH 局域网服务管理器（左栏面板）：把「复习网站等本地 HTT
 ## 安装
 
 ```sh
-# 源码真源：D:\DeepSeek_harness\plugins\dsh-lan-services（改代码后须 remove + add 刷新）
-node D:\DeepSeek_harness\node_modules\@deepseek-ai\dsh\lib\bin.js plugin --profile web add file:D:/DeepSeek_harness/plugins/dsh-lan-services
+# 源码真源：<DSH 安装根>\plugins\dsh-lan-services（改代码后须 remove + add 刷新）
+node <DSH 安装根>\node_modules\@deepseek-ai\dsh\lib\bin.js plugin --profile web add file:<DSH 安装根>/plugins/dsh-lan-services
 ```
 
 装完重启 DSH web 生效。
