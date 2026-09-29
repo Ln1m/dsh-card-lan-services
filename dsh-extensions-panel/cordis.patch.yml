@@ -1,0 +1,8 @@
+# dsh-extensions-panel plugin patch: registers the plugin row into the web profile
+# roster. The node half (exports ".") serves /extensions/api/* for the virtual
+# display switch; the `dsh.client` declaration in package.json loads the browser
+# half (exports "./client") which fills the "sidebar.extensions" seat declared by
+# @anoslide/dsh-client-vscode-layout (the left sidebar's 「功能」 tab).
+- insert:
+    - id: dsh-extensions-panel
+      name: 'dsh-extensions-panel'

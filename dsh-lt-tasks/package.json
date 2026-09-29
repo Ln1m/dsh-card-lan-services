@@ -1,0 +1,58 @@
+{
+    "name": "dsh-lt-tasks",
+    "version": "0.7.0",
+    "type": "module",
+    "main": "lib/index.js",
+    "exports": {
+        ".": {
+            "default": "./lib/index.js"
+        },
+        "./client": {
+            "default": "./lib/client.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "dsh": {
+        "bundle": {
+            "patch": "./cordis.patch.yml"
+        },
+        "client": {
+            "inject": [
+                "@deepseek-ai/dsh-client-ui-conversation"
+            ],
+            "platform": "web"
+        }
+    },
+    "peerDependencies": {
+        "@deepseek-ai/cordis": "^4.0.1",
+        "@deepseek-ai/dsh-tools": "^0.1.0-rc.6 || ^0.1.5-rc.2",
+        "react": "^18.2.0"
+    },
+    "files": [
+        "lib",
+        "docs",
+        "cordis.patch.yml",
+        "README.md",
+        "README.en.md",
+        "LICENSE"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Ln1m/dsh-side-suite.git",
+        "directory": "dsh-lt-tasks"
+    },
+    "homepage": "https://github.com/Ln1m/dsh-side-suite/tree/main/dsh-lt-tasks#readme",
+    "bugs": {
+        "url": "https://github.com/Ln1m/dsh-side-suite/issues"
+    },
+    "keywords": [
+        "dsh",
+        "deepseek-harness",
+        "plugin",
+        "task",
+        "long-running"
+    ],
+    "description": "Multi-window long-running task management plugin for DeepSeek Harness: a task is a persistent folder (7-document archive with a fact-only immutable list, numbered checklist items and milestones, plus a minimal handoff index), with lock-based concurrency, content snapshots, a 6-state machine, and a left-sidebar Tasks view.",
+    "author": "Ln1m (https://github.com/Ln1m)"
+}
