@@ -39,6 +39,8 @@ dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/do
 dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lt-tasks-0.7.0.tgz"
 ```
 
+装的时候若报 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`（国内出口证书注入，Node 默认不读系统证书库），先执行 `$env:NODE_OPTIONS='--use-system-ca'` 再装。
+
 装完重启 web 实例。每个包目录里还有它自己的 README。
 
 ## 界面

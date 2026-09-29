@@ -39,6 +39,8 @@ dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/do
 dsh plugin --profile web add "https://github.com/Ln1m/dsh-side-suite/releases/download/v0.1.0/dsh-lt-tasks-0.7.0.tgz"
 ```
 
+If the install fails with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` (a TLS-intercepting proxy; Node does not read the system CA store by default), run `$env:NODE_OPTIONS='--use-system-ca'` first.
+
 Restart the web instance afterwards. Each package directory carries its own README.
 
 ## Screenshots
